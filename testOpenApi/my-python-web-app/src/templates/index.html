@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Stream</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+
+<body>
+    <h1>Ask OpenAI</h1>
+    <form id="ask-form">
+        <input type="text" name="user_input" id="user_input" placeholder="Ask something...">
+        <button type="submit">Ask</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('ask-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = 'Loading...';
+
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'user_input': userInput
+                })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            try {
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    debugger
+                    const text = decoder.decode(value);
+                    buffer += text;
+                    responseDiv.innerHTML = marked.parse(buffer);
+                }
+            } catch (error) {
+                console.error('Error reading stream:', error);
+                responseDiv.innerHTML = 'Error occurred while processing the response.';
+            }
+
+
+
+            // Convert markdown to HTML using marked library
+            // responseDiv.innerHTML = marked.parse(data.response);
+        });
+    </script>
+</body>
+
+</html>

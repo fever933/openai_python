@@ -1,0 +1,26 @@
+[
+  {
+    "name": "牛肉",
+    "expiry_date": "2025-02-21",
+    "quantity": 1,
+    "category": "肉类"
+  },
+  {
+    "name": "鸡蛋",
+    "expiry_date": "2025-02-20",
+    "quantity": 20,
+    "category": "1"
+  },
+  {
+    "name": "番茄",
+    "expiry_date": "2025-02-21",
+    "quantity": 1,
+    "category": "蔬菜"
+  },
+  {
+    "name": "青菜",
+    "expiry_date": "2025-02-21",
+    "quantity": 1,
+    "category": "蔬菜"
+  }
+]
