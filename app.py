@@ -141,7 +141,7 @@ def get_suggestions():
         ingredients = []
         data = request.get_json()
         need_buy_more_value = data.get('needBuyMore', 'false')
-        need_buy_more = '可以适当购买其他配菜' if need_buy_more_value.lower() == 'true' else '尽量不要买其他配菜'
+        need_buy_more = '必要情况可以去买一些常见蔬菜作为配菜' if need_buy_more_value.lower() == 'true' else '尽量不要买其他配菜'
         try:
             with open('fridge_data.json', 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -158,7 +158,7 @@ def get_suggestions():
 
         # Create prompt with ingredients
         ingredients_str = ', '.join(ingredients)
-        prompt = f"你是一个小红书的美食博主，请根据家里冰箱已有的食材： '{ingredients_str}'，请给出可以制作的家常菜建议，'{need_buy_more}',做出两到三个菜，供两个人吃。"
+        prompt = f"你是一个小红书的美食博主，请根据家里冰箱已有的食材： '{ingredients_str}'，请给出可以制作的家常菜建议，'{need_buy_more}',做出两到三个菜，供两个人吃，要求菜品要精致营养，荤素搭配，不要搞奇怪的搭配尽可能的常见的，淮扬菜、川湘菜、东北菜都可以，葱姜蒜等家里常备不需考虑。"
         print(prompt)
         # Call API
         try:

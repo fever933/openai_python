@@ -18,30 +18,12 @@
     "create_date": "2025-02-23"
   },
   {
-    "id": "6eab23e3-806b-4131-b9d4-1f415d6efd41",
-    "name": "台式香肠",
-    "expiry_date": "2025-03-02",
-    "quantity": 1000,
-    "category": "速食",
-    "unit": "克",
-    "create_date": "2025-02-23"
-  },
-  {
     "id": "00195648-bd53-48df-be58-d62a704c0c12",
     "name": "澳洲肥牛",
     "expiry_date": "2025-03-02",
     "quantity": 1000,
     "category": "肉类",
     "unit": "克",
-    "create_date": "2025-02-23"
-  },
-  {
-    "id": "64d06fac-b0bc-48b2-96b4-c866fef9eb86",
-    "name": "鱼圆",
-    "expiry_date": "2025-03-31",
-    "quantity": 1,
-    "category": "丸子",
-    "unit": "碗",
     "create_date": "2025-02-23"
   },
   {
@@ -96,6 +78,24 @@
     "quantity": 7,
     "category": "蛋类",
     "unit": "个",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "6c58facf-d4c7-47af-b65a-53cb9dbd395f",
+    "name": "粉丝",
+    "expiry_date": "2026-03-01",
+    "quantity": 200,
+    "category": "豆制品",
+    "unit": "克",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "07328de2-7e40-49c8-829f-3e4822a67182",
+    "name": "鱼丸",
+    "expiry_date": "2025-03-02",
+    "quantity": 1,
+    "category": "丸子",
+    "unit": "碗",
     "create_date": "2025-02-23"
   }
 ]
