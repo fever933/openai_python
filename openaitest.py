@@ -51,7 +51,7 @@ class DeepSeekAPI:
 
 def main():
   # Replace with your actual API key or set it as an environment variable
-  api_key = "sk-545e0b28cc5f4292bb69ebac2d256a19"
+  api_key = "sk-cf183fa0e2314e63b0f616f471a32b26"
   
   deepseek = DeepSeekAPI(api_key)
   

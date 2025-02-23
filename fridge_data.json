@@ -1,26 +1,101 @@
 [
   {
-    "name": "牛肉",
-    "expiry_date": "2025-02-21",
-    "quantity": 1,
-    "category": "肉类"
-  },
-  {
-    "name": "鸡蛋",
-    "expiry_date": "2025-02-20",
-    "quantity": 20,
-    "category": "1"
-  },
-  {
-    "name": "番茄",
-    "expiry_date": "2025-02-21",
-    "quantity": 1,
-    "category": "蔬菜"
-  },
-  {
+    "id": "02271b85-b1b2-4b90-8dde-a406eda98559",
     "name": "青菜",
-    "expiry_date": "2025-02-21",
+    "expiry_date": "2025-03-02",
+    "quantity": 5,
+    "category": "蔬菜",
+    "unit": "个",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "c5c3a4bc-cb9b-40b4-ba89-4549d3d7dc77",
+    "name": "娃娃菜",
+    "expiry_date": "2025-03-02",
+    "quantity": 2,
+    "category": "蔬菜",
+    "unit": "个",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "6eab23e3-806b-4131-b9d4-1f415d6efd41",
+    "name": "台式香肠",
+    "expiry_date": "2025-03-02",
+    "quantity": 1000,
+    "category": "速食",
+    "unit": "克",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "00195648-bd53-48df-be58-d62a704c0c12",
+    "name": "澳洲肥牛",
+    "expiry_date": "2025-03-02",
+    "quantity": 1000,
+    "category": "肉类",
+    "unit": "克",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "64d06fac-b0bc-48b2-96b4-c866fef9eb86",
+    "name": "鱼圆",
+    "expiry_date": "2025-03-31",
     "quantity": 1,
-    "category": "蔬菜"
+    "category": "丸子",
+    "unit": "碗",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "4291a973-1033-45e8-b85e-f8f78bbbb199",
+    "name": "牛肉饼",
+    "expiry_date": "2026-03-01",
+    "quantity": 30,
+    "category": "肉类",
+    "unit": "个",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "f5a560c9-aa4b-4d27-82dd-ddae6b25c8a9",
+    "name": "牛腩",
+    "expiry_date": "2025-03-02",
+    "quantity": 1,
+    "category": "肉类",
+    "unit": "碗",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "ccd21fbd-4e4c-4a3c-b9b6-2063f21ed06a",
+    "name": "红烧羊肉",
+    "expiry_date": "2025-03-02",
+    "quantity": 1,
+    "category": "肉类",
+    "unit": "碗",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "387cadf4-2fe0-4525-9dc1-e6aaf62a03b7",
+    "name": "鸡翅",
+    "expiry_date": "2025-03-02",
+    "quantity": 200,
+    "category": "肉类",
+    "unit": "克",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "58f5fe17-fb50-4e78-ae86-f86d10a3bfcd",
+    "name": "玉米杂菜",
+    "expiry_date": "2025-10-26",
+    "quantity": 1,
+    "category": "蔬菜",
+    "unit": "包",
+    "create_date": "2025-02-23"
+  },
+  {
+    "id": "97db8192-2d40-4eae-9082-8b54ae0a3e5c",
+    "name": "鸡蛋",
+    "expiry_date": "2025-03-02",
+    "quantity": 7,
+    "category": "蛋类",
+    "unit": "个",
+    "create_date": "2025-02-23"
   }
 ]

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  fridge:
+    image: crpi-7ove6igc635triub.cn-shanghai.personal.cr.aliyuncs.com/hanqw_ztt/fridge:0.2.3
+    container_name: fridge
+    ports:
+      - "5000:5000"
+    volumes:
+      - /home/hanqw/fridge/fridge_data.json:./fridge_data.json
+    restart: unless-stopped

@@ -3,6 +3,13 @@ document.addEventListener('DOMContentLoaded', function () {
     flatpickr("#datePicker", {
         locale: "zh",
         dateFormat: "Y-m-d",
+        defaultDate: new Date(new Date().setDate(new Date().getDate() + 7))
+    });
+
+    // 初始化创建日期选择器
+    flatpickr("#createDatePicker", {
+        locale: "zh",
+        dateFormat: "Y-m-d",
         defaultDate: new Date()
     });
 
@@ -26,6 +33,17 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 alert('添加成功！');
                 e.target.reset();
+                // 重新设置表单的默认值
+                flatpickr("#datePicker", {
+                    locale: "zh",
+                    dateFormat: "Y-m-d",
+                    defaultDate: new Date(new Date().setDate(new Date().getDate() + 7))
+                });
+                flatpickr("#createDatePicker", {
+                    locale: "zh",
+                    dateFormat: "Y-m-d",
+                    defaultDate: new Date()
+                });
                 refreshList();
             })
             .catch(error => alert('添加失败：' + error));
@@ -46,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('suggestionForm').addEventListener('submit', async function (e) {
         e.preventDefault();
         const suggestionsList = document.getElementById('suggestionsList');
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
 
         // Show loading state
         suggestionsList.innerHTML = '<div class="loading">正在生成建议...</div>';
@@ -56,10 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                body: JSON.stringify(data)
+
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
             }
 
             const reader = response.body.getReader();
@@ -98,31 +121,46 @@ function refreshList() {
             const tbody = document.getElementById('foodList');
             tbody.innerHTML = '';
 
+            if (foods.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8">没有食物数据</td></tr>';
+                return;
+            }
+
             foods.forEach(food => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${food.name}</td>
-                    <td>${food.quantity}</td>
-                    <td>${food.category}</td>
-                    <td>${food.expiry_date}</td>
-                    <td class="status-${getStatusClass(food.status)}">${food.status}</td>
+                    <td>${food.name || ''}</td>
+                    <td>${food.quantity || ''}${food.unit || ''}</td>
+                    
+                    <td>${food.category || ''}</td>
+                    <td>${food.create_date || ''}</td>
+                    <td>${food.expiry_date || ''}</td>
+                    <td class="status-${getStatusClass(food.status || '')}">${food.status || ''}</td>
                     <td>
                         <button class="btn btn-danger btn-remove" 
-                                onclick="removeFood('${food.name}')">
+                                onclick="removeFood('${food.id}', '${food.name}')">
                             删除
+                        </button> / 
+                        <button class="btn btn-danger btn-remove" 
+                                onclick="clearFood('${food.id}', '${food.name}')">
+                            清空
                         </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+        })
+        .catch(error => {
+            const tbody = document.getElementById('foodList');
+            tbody.innerHTML = `<tr><td colspan="8">加载数据时出错: ${error.message}</td></tr>`;
         });
 }
 
-function removeFood(name) {
+function removeFood(id, name) {
     const quantity = prompt(`要移除多少个/份 ${name}？`, "1");
     if (quantity === null) return;
 
-    fetch(`/api/foods/${name}?quantity=${quantity}`, {
+    fetch(`/api/foods/${id}?quantity=${quantity}`, {
         method: 'DELETE'
     })
         .then(response => response.json())
@@ -131,6 +169,20 @@ function removeFood(name) {
             refreshList();
         })
         .catch(error => alert('删除失败：' + error));
+}
+
+function clearFood(id, name) {
+    if (!confirm(`确定要移除所有${name}吗？`)) return;
+
+    fetch(`/api/foods/all/${id}`, {
+        method: 'DELETE'
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(`所有${name}已删除！`);
+            refreshList();
+        })
+        .catch(error => alert(`删除所有${name}失败：` + error));
 }
 
 function checkExpired() {

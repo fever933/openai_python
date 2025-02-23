@@ -6,25 +6,41 @@ import openai
 import time
 import requests
 from openai import OpenAI
+from uuid import uuid4
+
 
 app = Flask(__name__)
 
 # 在文件顶部添加你的 OpenAI API 密钥
-# openai.api_key = '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'  # 替换为你的 API 密钥
+from config import API_KEY  # 导入 API 密钥
 
 class FoodItem:
-    def __init__(self, name, expiry_date, quantity, category):
+    def __init__(self, name, expiry_date, quantity, category, unit, create_date=None, id=None):
+        self.id = id or str(uuid4())
         self.name = name
-        self.expiry_date = datetime.strptime(expiry_date, '%Y-%m-%d').date()
+        self.expiry_date = expiry_date  # 保存为字符串格式
         self.quantity = quantity
         self.category = category
+        self.unit = unit
+        self.create_date = create_date if create_date else date.today().strftime('%Y-%m-%d')  # 保存为字符串格式
     
     def to_dict(self):
+        expiry_date = self.expiry_date
+        create_date = self.create_date
+
+            # 确保 expiry_date 和 create_date 是 datetime.date 类型
+        if isinstance(expiry_date, str):
+            expiry_date = datetime.strptime(expiry_date, '%Y-%m-%d').date()
+        if isinstance(create_date, str):
+            create_date = datetime.strptime(create_date, '%Y-%m-%d').date()
         return {
+            'id': self.id,
             'name': self.name,
-            'expiry_date': self.expiry_date.strftime('%Y-%m-%d'),
+            'expiry_date': self.expiry_date,
             'quantity': self.quantity,
-            'category': self.category
+            'category': self.category,
+            'unit': self.unit,
+            'create_date': self.create_date
         }
 
 class FridgeManager:
@@ -34,9 +50,12 @@ class FridgeManager:
         self.load_data()
     
     def save_data(self):
-        data = [item.to_dict() for item in self.items]
-        with open(self.data_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        try:
+            data = [item.to_dict() for item in self.items]
+            with open(self.data_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Error saving data: {str(e)}")
     
     def load_data(self):
         try:
@@ -57,14 +76,20 @@ def index():
 def get_foods():
     today = date.today()
     foods = []
+    fridge = FridgeManager()
+
+
     for item in fridge.items:
-        status = "已过期" if item.expiry_date < today else \
-                "即将过期" if (item.expiry_date - today).days <= 3 else "正常"
+        # 将字符串转换为 datetime.date 对象
+        expiry_date = datetime.strptime(item.expiry_date, '%Y-%m-%d').date()
+        status = "已过期" if expiry_date < today else \
+                "即将过期" if (expiry_date - today).days <= 3 else "正常"
         foods.append({
             **item.to_dict(),
             'status': status
         })
     return jsonify(foods)
+        
 
 @app.route('/api/foods', methods=['POST'])
 def add_food():
@@ -74,20 +99,23 @@ def add_food():
             name=data['name'],
             expiry_date=data['expiry_date'],
             quantity=int(data['quantity']),
-            category=data['category']
+            category=data['category'],
+            unit=data['unit'],
+            create_date=data['create_date'],
         )
         fridge.items.append(food)
         fridge.save_data()
         return jsonify({'message': '添加成功'}), 200
     except Exception as e:
+        print(f"添加食物时出错: {str(e)}")
         return jsonify({'error': str(e)}), 400
 
-@app.route('/api/foods/<name>', methods=['DELETE'])
-def remove_food(name):
+@app.route('/api/foods/<id>', methods=['DELETE'])
+def remove_food(id):
     try:
         quantity = int(request.args.get('quantity', 1))
         for item in fridge.items:
-            if item.name == name:
+            if item.id == id:
                 if item.quantity <= quantity:
                     fridge.items.remove(item)
                 else:
@@ -98,15 +126,26 @@ def remove_food(name):
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+@app.route('/api/foods/all/<id>', methods=['DELETE'])
+def remove_all_food(id):
+    try:
+        fridge.items = [item for item in fridge.items if item.id != id]
+        fridge.save_data()
+        return jsonify({'message': '所有指定食物已删除'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 @app.route('/api/suggestions', methods=['POST'])
 def get_suggestions():
     try:
         # Read ingredients from fridge data
         ingredients = []
+        data = request.get_json()
+        need_buy_more_value = data.get('needBuyMore', 'false')
+        need_buy_more = '可以适当购买其他配菜' if need_buy_more_value.lower() == 'true' else '尽量不要买其他配菜'
         try:
             with open('fridge_data.json', 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                ingredients = [f"{item['name']} ({item['quantity']}份)" for item in data]
+                ingredients = [f"{item['name']} ({item['quantity']} {item['unit']})" for item in data]
         except FileNotFoundError:
             return jsonify({'error': '找不到食材数据文件'}), 404
         except json.JSONDecodeError:
@@ -119,19 +158,20 @@ def get_suggestions():
 
         # Create prompt with ingredients
         ingredients_str = ', '.join(ingredients)
-        prompt = f"作为一个专业厨师，基于以下食材及其数量 '{ingredients_str}'，请给出可以制作的家常菜建议，要求尽可能只用提供的食材，不需要全用完，用网红厨师王刚的风格回答。"
-
+        prompt = f"你是一个小红书的美食博主，请根据家里冰箱已有的食材： '{ingredients_str}'，请给出可以制作的家常菜建议，'{need_buy_more}',做出两到三个菜，供两个人吃。"
+        print(prompt)
         # Call API
         try:
             client = OpenAI(
-                api_key="sk-cf183fa0e2314e63b0f616f471a32b26", 
+                api_key=API_KEY,  # 使用从 config.py 中读取的 API 密钥
                 base_url="https://api.deepseek.com"
             )
 
             response = client.chat.completions.create(
                 model="deepseek-chat",
                 messages=[{"role": "user", "content": prompt}],
-                stream=True
+                stream=True,
+                timeout=30  # 增加超时时间
             )
 
             def generate():
